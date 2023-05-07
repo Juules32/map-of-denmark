@@ -218,10 +218,12 @@ public class RTree implements Serializable {
                 Way way = ways.get(i);
 
                 for (Node node : way.nodes) {
-                    double dist = HelperMethods.distFromTo(lat, lon, node);
-                    if(dist < currNewDist) {
-                        currNewDist = dist;
-                        currNearestNode = node;
+                    if(node != null) {
+                        double dist = HelperMethods.distFromTo(lat, lon, node);
+                        if(dist < currNewDist) {
+                            currNewDist = dist;
+                            currNearestNode = node;
+                        }
                     }
                 }
                 
@@ -259,14 +261,7 @@ public class RTree implements Serializable {
         else if(lat < latStart && lon < lonFin) {
             return HelperMethods.distFromTo(lat, lon, latStart, lonStart);
         }
-        else if(lon > lonStart && lon < lonFin) {
-            if(lat < latStart) return HelperMethods.distFromTo(lat, lon, latStart, lon);
-            else return HelperMethods.distFromTo(lat, lon, latFin, lon);
-        }
-        else if(lat > latStart && lat < latFin) {
-            if(lon < lonStart) return HelperMethods.distFromTo(lat, lon, lat, lonStart);
-            else return HelperMethods.distFromTo(lat, lon, lat, lonFin);
-        }
+        
 
         return Double.POSITIVE_INFINITY;
     }
