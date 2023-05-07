@@ -1,0 +1,35 @@
+highway
+    motorway 233 144 160 0 130
+    motorway_link 233 144 160 0 130
+    trunk 251 192 172 1 130
+    trunk_link 251 192 172 1 130
+    primary 253 215 161 1 90
+    primary_link 253 215 161 1 90
+    secondary 246 250 187 2 80
+    secondary_link 246 250 187 2 80
+    tertiary 254 254 254 3 70
+    tertiary_link 254 254 254 3 70
+    unclassified 254 254 254 5
+    residential 254 254 254 6 50
+    living_street 237 237 237 6 30
+    service 254 254 254 6 20
+    track 212 171 79 8
+    footway 249 179 170 8
+    bridleway 147 197 143 8
+    path 249 179 170 8
+    cycleway 169 196 240 8
+    sidewalk 248 184 175 9
+    crossing 248 184 175 9
+
+//
+
+
+waterway
+    waterway 170 211 223 2
+
+
+
+virker ikke hvis der kommer et andet tag der matcher efter!
+
+skoven 'Almindingen' er en relation der består af inner ways og ÉN outer way.
+gør så den bliver tegnet

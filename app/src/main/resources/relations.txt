@@ -1,0 +1,18 @@
+name
+    Bornholm 235 237 213 0
+    Region_Sjælland 235 237 213 0
+    Region_Syddanmark 235 237 213 0
+    Region_Midtjylland 235 237 213 0
+    Region_Nordjylland 235 237 213 0
+    Region_Hovedstaden 235 237 213 0
+
+landuse
+    forest 173 209 158 1
+
+natural
+    water 170 211 223 1
+
+//
+
+building
+    yes 217 208 201 9

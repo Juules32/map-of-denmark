@@ -1,0 +1,57 @@
+landuse
+    commercial 238 207 207 6
+    construction 199 199 180 6
+    industrial 230 209 227 6
+    retail 254 202 197 6
+    cemetery 163 199 168 6
+    farmland 238 240 213 6
+    forest 173 209 158 6
+    meadow 205 235 176 6
+    recreation_ground 223 252 226 6
+    allotments 201 225 191 6
+    grass 205 235 176 6
+    landfill 182 181 146 6
+    residential 224 223 223 5
+    quarry 197 195 195 6
+    farmyard 245 220 186 6
+
+leisure
+    dog_park 210 245 213 9
+    pitch 171 225 204 9
+    playground 223 252 226 9
+    park 200 250 204 9
+    garden 206 236 177 9
+    sports_centre 224 252 227 9
+    stadium 224 252 227 9
+    track 170 224 203 9
+    swimming_pool 170 211 223 9
+    golf_course 222 246 192 7
+
+natural
+    water 170 211 223 4
+    wood 173 209 158 6
+    wetland 223 252 226 6
+    scrub 200 215 171 6
+    water 170 211 223 6
+    grassland 206 236 177 6
+    heath 214 217 159 6
+    beach 255 241 187 1
+    mud 230 221 211 6
+    shingle 237 228 220 6
+    sand 245 234 199 6
+    dune 245 234 199 6
+
+amenity
+    school 255 255 229 7
+    grave_yard 163 199 168 7
+
+highway
+    pedestrian 221 221 233 6
+
+military
+    barracks 204 234 193 6
+
+//
+
+building
+    yes 217 208 201 9
