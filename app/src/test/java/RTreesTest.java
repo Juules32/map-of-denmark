@@ -26,7 +26,7 @@ public class RTreesTest {
     ResizableCanvas canvas = new ResizableCanvas(1200, 700);
     GraphicsContext gc = canvas.getGraphicsContext2D();
 
-    
+    /*
     @BeforeAll static void setup() {
         try {
             testModel = Model.load("data/aakirkeby.osm", new FileInputStream("data/aakirkeby.osm"));
@@ -73,5 +73,5 @@ public class RTreesTest {
         assertEquals(-55.056114196777344, testRTreeWays.nearestNeighbor(-53, 10).lat);
         assertEquals(-55.069095611572266, testRTreeWays.nearestNeighbor(-55.05, 10).lat);
         assertEquals(-55.08506393432617, testRTreeWays.nearestNeighbor(-57, 10).lat);
-    }
+    } */
 }

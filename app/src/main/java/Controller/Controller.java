@@ -12,6 +12,7 @@ import DataStructures.GraphNode;
 import Model.Model;
 import View.View;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 
 public class Controller {
@@ -77,7 +78,23 @@ public class Controller {
             if(view.chosenStartNode != null && view.chosenEndNode != null) {
                 GraphNode nearestNeighborFrom = (GraphNode) model.wayTrees.nearestNeighbor(view.chosenStartNode);
                 GraphNode nearestNeighborTo = (GraphNode) model.wayTrees.nearestNeighbor(view.chosenEndNode);
-                model.graph.shortestPath(nearestNeighborFrom, nearestNeighborTo, view.dijkstraUsesAStar.isSelected(), view.transportOptions.getValue(), view.viewSearchedEdges.isSelected());
+                //Used to calculate running time
+                long startTime = System.currentTimeMillis();
+                boolean success = model.graph.shortestPath(nearestNeighborFrom, nearestNeighborTo, view.dijkstraUsesAStar.isSelected(), view.transportOptions.getValue(), view.viewSearchedEdges.isSelected());
+                if(!success) {
+                    String message = "Failed to find shortest path " + (!view.dijkstraUsesAStar.isSelected() ? "without " : "") +
+                            "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n";
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
+                    alert.show();
+                    System.out.println(message);
+                } else{
+                    //Print total distance to end node
+                    System.out.println("Shortest path in km: " + model.graph.distanceStr);
+
+                    //Print the total running time information
+                    System.out.println("Found shortest path " + (!view.dijkstraUsesAStar.isSelected() ? "without " : "") +
+                            "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n");
+                }
             }
             
             view.redraw();

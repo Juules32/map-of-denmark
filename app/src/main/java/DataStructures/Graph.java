@@ -80,29 +80,28 @@ public class Graph implements Serializable {
         else System.out.println("Node doesn't have any edges");
     }
     
-    public void shortestPath(long startNodeId, long endNodeId, String type) {
-        shortestPath(nodes.get(startNodeId), nodes.get(endNodeId), type);
+    public boolean shortestPath(long startNodeId, long endNodeId, String type) {
+        return shortestPath(nodes.get(startNodeId), nodes.get(endNodeId), type);
     }
 
-    public void shortestPath(long startNodeId, long endNodeId, boolean aStar, String type) {
-        shortestPath(nodes.get(startNodeId), nodes.get(endNodeId), aStar, type, false);
+    public boolean shortestPath(long startNodeId, long endNodeId, boolean aStar, String type) {
+        return shortestPath(nodes.get(startNodeId), nodes.get(endNodeId), aStar, type, false);
     }
 
-    public void shortestPath(GraphNode startNode, GraphNode endNode, String type) {
-        shortestPath(startNode, endNode, true, type, false);
+    public boolean shortestPath(GraphNode startNode, GraphNode endNode, String type) {
+        return shortestPath(startNode, endNode, true, type, false);
     }
     
     //Caluculates shortest distance between two graph nodes with or without A*
-    public void shortestPath(GraphNode startNode, GraphNode endNode, boolean aStar, String type, boolean viewSearchedEdges) {
-        
-        //Used to calculate running time
-        long startTime = System.currentTimeMillis();
-
+    public boolean shortestPath(GraphNode startNode, GraphNode endNode, boolean aStar, String type, boolean viewSearchedEdges) {
         if(startNode == null || endNode == null || startNode.edges == null || endNode.edges == null) {
             System.out.println("Node(s) could not be found in graph!\n");
             fastestWay = null;
             searchedEdges = null;
-            return;
+            distanceStr = null;
+            timeStr = null;
+            vehicleStr = null;
+            return false;
         }
 
         System.out.println("ShortestPath is now running...");
@@ -188,19 +187,12 @@ public class Graph implements Serializable {
                 timeStr = Integer.toString((int)(endNode.weightTo*111.139*60));
                 vehicleStr = type.toLowerCase();
 
-                //Print total distance to end node
-                System.out.println("Shortest path in km: " + distance);
-
                 //Clean up the graph so it can be used again
                 cleanUp(startNode, endNode, viewSearchedEdges);
-
-                //Print the total running time information
-                System.out.println("Found shortest path " + (!aStar ? "without " : "") + 
-                "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n");
                 
                 //Set found way
                 fastestWay = new Way(nodesReached, 100, 0, 0);
-                return;
+                return true;
             }
 
             //If a dead end is found, continue
@@ -231,12 +223,8 @@ public class Graph implements Serializable {
 
         //If end node is not found, clean up graph and return nothing
         cleanUp(startNode, endNode, viewSearchedEdges);
-        String message = "Failed to find shortest path " + (!aStar ? "without " : "") + 
-        "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n";
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
-        alert.show();
-        System.out.println(message);
         fastestWay = null;
+        return false;
     }
     
     //Performs DFS on all nodes used in dijkstra call and resets them
