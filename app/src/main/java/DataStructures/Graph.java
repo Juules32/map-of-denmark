@@ -7,12 +7,11 @@ import java.util.PriorityQueue;
 import java.util.Stack;
 
 import Utils.HelperMethods;
-import javafx.scene.control.Alert;
 
 public class Graph implements Serializable {
     
+    //The nodes in the graph
     public Trie<GraphNode> nodes;
-
 
     //Amount of verteces in the graph
     private long V = 0;
@@ -40,15 +39,18 @@ public class Graph implements Serializable {
     public long getV() {return V;}
     public long getE() {return E;}
 
+    //Adds node to the graph
     public void addNode(long id, GraphNode node) {
         if(nodes.set(id, node)) ++V;
     }
 
+    //Adds undirected edge between two nodes
     public void addUndirectedEdge(long fromId, long toId, int maxSpeed, boolean isCarAllowed) {
         addDirectedEdge(fromId, toId, maxSpeed, isCarAllowed);
         addDirectedEdge(toId, fromId, maxSpeed, isCarAllowed);
     }
 
+    //Adds directed edge between from one node to another
     public void addDirectedEdge(long fromId, long toId, int maxSpeed, boolean isCarAllowed) {
         GraphNode fromNode = nodes.get(fromId);
         if(fromNode.edges == null) fromNode.edges = new ArrayList<Edge>(2);
@@ -56,28 +58,46 @@ public class Graph implements Serializable {
         ++E;
     }
 
-    public void printEdge(long id) {
-        if(nodes.get(id) == null) System.out.println("Node is not part of graph");
-        else printEdge(nodes.get(id));
+    //Helper methods for printing Node and Edge information
+    public boolean printNode(long id) {
+        if(nodes.get(id) == null) {
+            System.out.println("Node is not part of graph");
+            return false;
+        }
+        else {
+            printNode(nodes.get(id));
+            return true;
+        }
     }
 
-    public void printEdge(GraphNode node) {
+    public void printNode(GraphNode node) {
         System.out.println("lat: " + node.lat + ", lon: " + node.lon);
     }
 
-    public void printEdges(long id) {
-        if(nodes.get(id) == null) System.out.println("Node is not part of graph");
-        else printEdges(nodes.get(id));
+    public boolean printEdges(long id) {
+        if(nodes.get(id) == null) {
+            System.out.println("Node is not part of graph");
+            return false;
+        }
+        else {
+            return printEdges(nodes.get(id));
+        }
     }
 
-    public void printEdges(GraphNode node) {
-        if(node.edges != null) {
-            System.out.println("The following Nodes are adjacent to node:");
-            for (Edge edge : node.edges) {
-                printEdge(edge.toId);
-            }
+    public boolean printEdges(GraphNode node) {
+        if(node.edges == null) {
+            System.out.println("Node doesn't have any edges");
+            return false;
         }
-        else System.out.println("Node doesn't have any edges");
+        else {
+            System.out.println("The following Nodes are adjacent to node:");
+
+            boolean result = true;
+            for (Edge edge : node.edges) {
+                if(!printNode(edge.toId)) result = false;
+            }
+            return result;
+        }
     }
     
     public boolean shortestPath(long startNodeId, long endNodeId, String type) {
@@ -97,24 +117,22 @@ public class Graph implements Serializable {
         if(startNode == null || endNode == null || startNode.edges == null || endNode.edges == null) {
             System.out.println("Node(s) could not be found in graph!\n");
             fastestWay = null;
-            searchedEdges = null;
-            distanceStr = null;
-            timeStr = null;
-            vehicleStr = null;
             return false;
         }
 
         System.out.println("ShortestPath is now running...");
 
-        //Max speed of car
+        //Speed is by default car maximum speed
         int speed = 130;
         if (type.equals("Bicycle")) speed = 20;
         else if (type.equals("Walk")) speed = 5;
-        boolean speedChanges = type.equals("Car");
         final double maxVehicleSpeed = speed;
 
         //Used for faster calculation
         final double inverseMaxVehicleSpeed = 1 / maxVehicleSpeed;
+
+        //If transport type is car, speed is variable
+        boolean speedChanges = type.equals("Car");
 
         //Used for finding weight
         double currentNodeWeight;
@@ -159,6 +177,8 @@ public class Graph implements Serializable {
 
         //The main part of dijkstra's algorithm
         while (!pq.isEmpty()) {
+
+            //The current node is set to the first element in the priority queue
             GraphNode currentNode = pq.poll();
 
             //If end node is found, terminate successfully
@@ -173,24 +193,34 @@ public class Graph implements Serializable {
                 infoBoxLon = currNode.lon;
 
                 while(currNode != startNode) {
+
+                    //Updates information box position based on route
                     if(currNode.lat < infoBoxLat) infoBoxLat = currNode.lat;
                     if(currNode.lon < infoBoxLon) infoBoxLon = currNode.lon;
+
+                    //Adds node to resulting way
                     nodesReached.add(currNode);
+
+                    //The length of the way is updated
                     currentLength += HelperMethods.metersFromTo(currNode, currNode.reachedFrom);
+                    
+                    //The current node is set to the next node in the chain
                     currNode = currNode.reachedFrom;
                 }
+
+                //The final node is added
                 nodesReached.add(currNode);
 
-                //Set results accordingly
+                //Results are set accordingly
                 double distance = currentLength;
                 distanceStr = "" + ((double)(int) (distance*1000)/1000);
                 timeStr = Integer.toString((int)(endNode.weightTo*111.139*60));
                 vehicleStr = type.toLowerCase();
 
-                //Clean up the graph so it can be used again
+                //Graph is cleaned so it can be used again
                 cleanUp(startNode, endNode, viewSearchedEdges);
                 
-                //Set found way
+                //Found way is set
                 fastestWay = new Way(nodesReached, 100, 0, 0);
                 return true;
             }
@@ -221,7 +251,7 @@ public class Graph implements Serializable {
             }
         }
 
-        //If end node is not found, clean up graph and return nothing
+        //If end node is not found, clean up graph and return false
         cleanUp(startNode, endNode, viewSearchedEdges);
         fastestWay = null;
         return false;
@@ -241,12 +271,13 @@ public class Graph implements Serializable {
         while (!stack.isEmpty()) {
             GraphNode currentNode = stack.pop();
 
-            //If 
+            //If a dead end is found, reset the node and continue
             if(currentNode.edges == null) {
                 currentNode.weightTo = Double.POSITIVE_INFINITY;
                 currentNode.reachedFrom = null;
                 continue;
             }
+
             // Iterates through all edges adjacent to the node
             for (Edge edge : currentNode.edges) {
                 GraphNode toNode = nodes.get(edge.toId);
@@ -256,6 +287,7 @@ public class Graph implements Serializable {
                     ++nodesCleaned;
                     stack.push(toNode);
 
+                    //If all searched edges are to be viewed, add current link
                     if(viewSearchedEdges) {
                         foundEdges.add(currentNode);
                         foundEdges.add(toNode);
@@ -265,7 +297,10 @@ public class Graph implements Serializable {
                 }
             }
         }
-        searchedEdges = new Way(foundEdges, 155, 155 , 155);
+
+        //Make a way from found edges
+        searchedEdges = new Way(foundEdges, 155, 155, 155);
+        
         System.out.println("Cleaned " + nodesCleaned + " nodes sucessfully!");
     }
 }

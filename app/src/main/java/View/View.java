@@ -1,6 +1,5 @@
 package View;
 
-
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -59,17 +58,17 @@ public class View {
     HBox topPane = new HBox();
 
     //The components of topPane
+    public Button fromPinButton = new Button();
+    public Button toPinButton = new Button();
     public ComboBox<String> fromBox = new ComboBox<>();
     public ComboBox<String> toBox = new ComboBox<>();
     public Button fromSearch = new Button("Search");
     public Button toSearch = new Button("Search");
-    public Button fromPinButton = new Button();
-    public Button toPinButton = new Button();
     public ComboBox<String> transportOptions = new ComboBox<>();
-    public Button findRouteButton = new Button("Go!");
-    public Button toggleDebug = new Button("Toggle Debug mode");
+    public Button findRouteButton = new Button("Find Route");
     public ComboBox<String> themeChooser = new ComboBox<>();
     public Button toggleTheme = new Button("Toggle Theme");
+    public Button toggleDebug = new Button("Toggle Debug mode");
 
     //Pane containing debugging options
     public VBox debugOptions = new VBox();
@@ -77,11 +76,11 @@ public class View {
     //The components of debugOptions
     public Button setBlue = new Button("Set new blue rectangle");
     public CheckBox dijkstraUsesAStar = new CheckBox("Use A* heuristic for dijkstra");
-    public CheckBox viewSearchedEdges = new CheckBox("Calculate searched edges");
+    public CheckBox calculateSearchedEdges = new CheckBox("Calculate searched edges");
     public CheckBox viewRouteDescription = new CheckBox("View route description");
-    public CheckBox viewRedBoxesCheckBox = new CheckBox("View red bounding boxes");
-    public CheckBox wayVisibility = new CheckBox("View ways");
-    public CheckBox areaVisibility = new CheckBox("View areas");
+    public CheckBox viewRedBoundingBoxes = new CheckBox("View red bounding boxes");
+    public CheckBox viewWays = new CheckBox("View ways");
+    public CheckBox viewAreas = new CheckBox("View areas");
     public CheckBox toggleDetailLevel = new CheckBox("Manual detail level");
     public Label currentDetailLevelLabel = new Label();
     public TextField setCurrentDetailLevel = new TextField(); 
@@ -121,21 +120,21 @@ public class View {
     public boolean debugging = false;
     public boolean choosingNewBlue = false;
     public boolean choosingNewStartNode = false;
-    public Node chosenStartNode = null;
-    public Node chosenEndNode = null;
     public boolean choosingNewEndNode = false;
     public boolean isDarkMode = false;
+    public Node chosenStartNode = null;
+    public Node chosenEndNode = null;
     
     public View(Model model, Stage primaryStage) {
         this.model = model;
         this.stage = primaryStage;
 
+        //Loads app icon
         this.stage.getIcons().add(new Image("icon.png"));
 
+        //Sets the title
         primaryStage.setTitle("Map of Denmark");
         
-        
-
         //Search boxes are styled
         fromBox.setEditable(true);
         fromBox.setPromptText("From");
@@ -150,36 +149,30 @@ public class View {
         fromPinButton.setGraphic(fromPinImage);
         toPinButton.setGraphic(toPinImage);
 
-        //Updates which files can be chosen to load
-        updateFileOptions();
+        //Transport options are set
+        transportOptions.getItems().addAll("Car", "Bicycle", "Walk");
+        transportOptions.getSelectionModel().selectFirst();
 
         //Theme chooser options are initialized
         themeChooser.getItems().addAll(
-            "Default", "High Saturation", "Dimmed", "Brightened",
+            "Default Theme", "High Saturation", "Dimmed", "Brightened",
             "Inverted", "Inverted and High Saturation", 
             "Inverted and Dimmed", "Inverted and Brightened"
         );
         themeChooser.getSelectionModel().selectFirst();
 
-        //Transport options are set
-        transportOptions.getItems().addAll("Car", "Bicycle", "Walk");
-        transportOptions.getSelectionModel().selectFirst();
-        
         //Checkbox default values are set
         dijkstraUsesAStar.setSelected(true);
         viewRouteDescription.setSelected(true);
-        wayVisibility.setSelected(true);
-        areaVisibility.setSelected(true);
-        viewRedBoxesCheckBox.setSelected(true);
-
-        //Default blue bounding box values are set
-        blueBorders[0] = 100;
-        blueBorders[1] = 100;
-        blueBorders[2] = canvas.getWidth()-320;
-        blueBorders[3] = canvas.getHeight()-100;
+        viewWays.setSelected(true);
+        viewAreas.setSelected(true);
+        viewRedBoundingBoxes.setSelected(true);
 
         currentDetailLevelLabel = new Label("Current detail level: " + currentDetailLevel);
         frameRateMeter.start();
+
+        //Updates which files can be chosen to load
+        updateFileOptions();
 
         //Panes are spaced and padded appropriately
         topPane.setSpacing(10);
@@ -194,24 +187,32 @@ public class View {
         debugOptions.setSpacing(10);
         debugOptions.setPadding(new Insets(20, 20, 20, 20));
         debugOptions.getChildren().addAll(
-            setBlue, dijkstraUsesAStar, viewSearchedEdges, viewRouteDescription,
-            viewRedBoxesCheckBox, wayVisibility, areaVisibility, 
+            setBlue, dijkstraUsesAStar, calculateSearchedEdges, viewRouteDescription,
+            viewRedBoundingBoxes, viewWays, viewAreas, 
             toggleDetailLevel, currentDetailLevelLabel, frameRateLabel, 
             browseFiles, createObjButton
         );
 
+        //Default blue bounding box values are set
+        blueBorders[0] = 100;
+        blueBorders[1] = 100;
+        blueBorders[2] = canvas.getWidth()-320;
+        blueBorders[3] = canvas.getHeight()-100;
+
+        //The linear transformation Affine object is defined
         trans = new Affine();
 
         //'Camera' pans and zooms according to min and max lat and lon values
         pan(-model.minlon, -model.maxlat);
         zoom(0, 0, canvas.getHeight() / (Math.abs(model.maxlat - model.minlat)));
 
-        redraw();
-        
         //primaryStage shows contents of scene
         pane.setTop(topPane);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        //Everything is drawn
+        redraw();
     }
 
     //Updates and redraws all visuals
@@ -250,10 +251,10 @@ public class View {
         double[] viewBox = {y1visible, y2visible, x1visible, x2visible};
         
         //Note: areas are drawn before lines
-        if(areaVisibility.isSelected()) {
+        if(viewAreas.isSelected()) {
             model.areaTrees.rangeSearch(viewBox, currentDetailLevel, themeChooser.getValue(), gc);
         }
-        if(wayVisibility.isSelected()) {
+        if(viewWays.isSelected()) {
             model.wayTrees.rangeSearch(viewBox, currentDetailLevel, themeChooser.getValue(), gc);
         }
 
@@ -270,11 +271,11 @@ public class View {
             gc.stroke();
 
             //Draws bounding boxes of RTrees
-            if(viewRedBoxesCheckBox.isSelected()) {
-                if(wayVisibility.isSelected()) {
+            if(viewRedBoundingBoxes.isSelected()) {
+                if(viewWays.isSelected()) {
                     model.wayTrees.boxSearch(viewBox, currentDetailLevel, gc);
                 }
-                if(areaVisibility.isSelected()) {
+                if(viewAreas.isSelected()) {
                     model.areaTrees.boxSearch(viewBox, currentDetailLevel, gc);
                 }
             }
@@ -301,6 +302,7 @@ public class View {
             gc.setLineWidth(2/Math.sqrt(trans.determinant()));
             HelperMethods.drawWay(model.graph.fastestWay, gc);
 
+            //Draws message box on canvas with shortest way information
             if(viewRouteDescription.isSelected()) {
                 double lat = model.graph.infoBoxLat;
                 double lon = model.graph.fastestWay.nodes[model.graph.fastestWay.nodes.length/2].lon;
@@ -377,24 +379,7 @@ public class View {
         return trans.transform(x, y);
     }
 
-    public void panToChosenNode(Node node, boolean isStartNode) {
-        Point2D mouseCoords = modelToMouse(node.lon, node.lat);
-        double x = mouseCoords.getX();
-        double y = mouseCoords.getY();
-        
-        if(node != null) {
-            pan(canvas.getWidth()/2-x, canvas.getHeight()/2-y);
-            if(isStartNode) chosenStartNode = node;
-            else chosenEndNode = node;
-            choosingNewStartNode = false; 
-            choosingNewEndNode = false;
-
-            model.graph.fastestWay = null;
-
-            redraw();
-        }
-    }
-
+    //Updates the list of files to choose from
     public void updateFileOptions() {
         try {
             //Get all files in data folder
@@ -410,7 +395,7 @@ public class View {
             browseFiles.getItems().setAll(fileOptions);
         } catch (NullPointerException e) {
             System.out.println("No data folder found!");
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Data folder not found! Please create a folder called \"data\" in the same directory as the .jar file and put the .osm and .obj files in there.");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Note: Add \"data\" folder with .osm or .osm.obj files to load custom data sets");
             alert.show();
         }
     }

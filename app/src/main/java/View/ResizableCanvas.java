@@ -1,7 +1,7 @@
 package View;
 import javafx.scene.canvas.Canvas;
 
-//Is used to be able to resize canvas
+//Used to be able to resize canvas
 public class ResizableCanvas extends Canvas {
     public ResizableCanvas(double arg1, double arg2) {
         super(arg1, arg2);

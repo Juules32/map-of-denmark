@@ -1,10 +1,7 @@
 import org.junit.jupiter.api.Test;
 import DataStructures.Node;
-
 import DataStructures.AddressTrie;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 
 class AddressTrieTest {
@@ -23,60 +20,60 @@ class AddressTrieTest {
         testTrie = new AddressTrie();
     }
     
-    @Test void setMultiple() {
+    @Test void setMultipleTest1() {
         assertTrue(testTrie.set(address, testNode1));
         assertFalse(testTrie.set(address, testNode2));
     }
 
-    @Test void setMultiple2() {
+    @Test void setMultipleTest2() {
         assertTrue(testTrie.set(address3, testNode1));
         assertFalse(testTrie.set(address3, testNode2));
     }
 
-    @Test void numAddresses() {
+    @Test void numAddressesTest() {
         testTrie.set(address, testNode1);
         testTrie.set(address3, testNode1);
         assertEquals(2, testTrie.getNumAddresses());
     }
 
-    @Test void getValueSuccess() {
+    @Test void getValueSuccessTest() {
         testTrie.set(address, testNode1);
         assertEquals(testNode1, testTrie.get(address));
     }
 
-    @Test void getValueUnsuccessfully1() {
+    @Test void getValueUnsuccessfullyTest1() {
         testTrie.set(address3, testNode1);
         assertEquals(null, testTrie.get(address));
     }
 
-    @Test void getValueUnsuccessfully2() {
+    @Test void getValueUnsuccessfullyTest2() {
         testTrie.set(address, testNode1);
         assertEquals(null, testTrie.get(address4));
     }
 
-    @Test void completeAddress() {
-        testTrie.getRecommendations("PARKVEJ 2 3760");
+    @Test void completeAddressTest() {
+        assertTrue(testTrie.getRecommendations("PARKVEJ 2 3760").isEmpty());
         testTrie.set(address, testNode1);
-        testTrie.getRecommendations("PARKVEJ 2 3760");
+        assertFalse(testTrie.getRecommendations("PARKVEJ 2 3760").isEmpty());
     }
 
-    @Test void streetAndHousenumberOnly() {
-        testTrie.getRecommendations("PARKVEJ 2");
+    @Test void streetAndHousenumberOnlyTest() {
+        assertTrue(testTrie.getRecommendations("PARKVEJ 2").isEmpty());
         testTrie.set(address, null);
-        testTrie.getRecommendations("PARKVEJ 2");
+        assertTrue(testTrie.getRecommendations("PARKVEJ 2").isEmpty());
         testTrie.set(address, testNode1);
-        testTrie.getRecommendations("PARKVEJ 2");
+        assertFalse(testTrie.getRecommendations("PARKVEJ 2").isEmpty());
     }
 
-    @Test void streetOnly() {
-        testTrie.getRecommendations("PARKVEJ");
+    @Test void streetOnlyTest() {
+        assertTrue(testTrie.getRecommendations("PARKVEJ").isEmpty());
         testTrie.set(address, null);
-        testTrie.getRecommendations("PARKVEJ");
+        assertTrue(testTrie.getRecommendations("PARKVEJ").isEmpty());
         testTrie.set(address, testNode1);
-        testTrie.getRecommendations("PARKVEJ");
+        assertFalse(testTrie.getRecommendations("PARKVEJ").isEmpty());
     }
 
-    @Test void nullAddress() {
-        testTrie.getRecommendations("");
+    @Test void nullAddressTest() {
+        assertTrue(testTrie.getRecommendations("").isEmpty());
     }
 }

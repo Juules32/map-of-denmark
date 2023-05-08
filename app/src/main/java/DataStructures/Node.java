@@ -3,7 +3,7 @@ import java.io.Serializable;
 
 public class Node implements Serializable {
 
-    //Every node has a latitude and longitude attribute
+    //Every node has a latitude and longitude
     public float lat, lon;
     
     //Note that latitude (y-axis) comes before longitude

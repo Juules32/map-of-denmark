@@ -69,20 +69,20 @@ public class Model implements Serializable {
     //The boundaries of the dataset
     public double minlat, maxlat, minlon, maxlon;
 
+    //Used to define and save relations as areas
     List<Way> separatedWays;
     ArrayList<Node> nodes;
-
     List<Way> currOuterWays = new ArrayList<Way>();
     List<Way> currInnerWays = new ArrayList<Way>();
-
 
     //Tries for node ids, way ids and addresses, respectively
     public Trie<Node> id2node = new Trie<>();
     public Trie<Way> id2way = new Trie<>();
     public AddressTrie addresses = new AddressTrie();
 
-    //Loads data if .obj file else passes to constructor
+    //Loads data if .obj file, else passes to constructor
     public static Model load(String filename, InputStream filenameStream) throws FileNotFoundException, IOException, ClassNotFoundException, XMLStreamException, FactoryConfigurationError {
+        
         //Timer used for displaying how long it takes data to load
         Timer timer = new Timer();
     
@@ -102,7 +102,6 @@ public class Model implements Serializable {
         }
     }
     
-    
     public Model(String filename, InputStream filenameStream) throws XMLStreamException, FactoryConfigurationError, IOException {
         this.filename = filename;
 
@@ -110,11 +109,9 @@ public class Model implements Serializable {
         InputStream waysInputStream = getClass().getClassLoader().getResourceAsStream("ways.txt");
         InputStream areasInputStream = getClass().getClassLoader().getResourceAsStream("areas.txt");
         InputStream relationsInputStream = getClass().getClassLoader().getResourceAsStream("relations.txt");
-
         TagParser.parse("ways.txt", waysInputStream, relevantWayKeyValues, wayColors, wayPriority, undefinedWaySpeeds);
         TagParser.parse("areas.txt", areasInputStream, relevantAreaKeyValues, areaColors, areaPriority);
         TagParser.parse("relations.txt", relationsInputStream, relevantRelationKeyValues, relationColors, relationPriority);
-
 
         //Decides which parser to use
         if (filename.endsWith(".zip")) {
@@ -150,13 +147,9 @@ public class Model implements Serializable {
         var input = new ZipInputStream(inputStream);
         input.getNextEntry();
         parseOSM(input);
-    }    
+    }
 
-    /*public void parseOSM(String filename) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
-        parseOSM(new FileInputStream(filename));
-    }*/
-
-    //Parses through all elements in xml file
+    //Parses through all lines in xml file
     private void parseOSM(InputStream inputStream) throws FileNotFoundException, XMLStreamException, FactoryConfigurationError {
 
         //Lists of arrayLists of ways later to be used by RTrees
@@ -177,7 +170,7 @@ public class Model implements Serializable {
         long nodeId = -1;
         float lat = -1, lon = -1;
  
-        //The current found key or value and their indeces
+        //The current found keys and values and their indeces
         String wayKey = null;
         String wayValue = null;
         String areaKey = null;
@@ -305,8 +298,10 @@ public class Model implements Serializable {
                                 if (v.equals("track") || v.equals("path") || v.equals("footway") || v.equals("cycleway")) isCarAllowed = false;
                                 else typeOfUndefinedWay = v;
                             }
+                        }
 
-                        } else {
+                        //Else, update areaKey/areaValue if current key/value pair is relevant
+                        else {
                             if(!relevantRelationKeyValues.containsKey(areaKey)) {
                                 areaKey = k;
                                 areaValue = v;
@@ -315,8 +310,6 @@ public class Model implements Serializable {
                                 }
                             }
                         }
-
-                        
                     }
                 }
 
@@ -392,7 +385,6 @@ public class Model implements Serializable {
 
                             graphNodes.add(graph.nodes.get(currId));
 
-
                             if(i != 0) {
                                 //If way is one-directional, add directed edges between nodes
                                 if(wayIsOneWay) {
@@ -443,7 +435,7 @@ public class Model implements Serializable {
 
                     //Otherwise, add to Trie of ways only
                     else {
-                        var newWay = new Way(nodesInCurrWay, TagParser.DEFAULT_COLOR, TagParser.DEFAULT_COLOR, TagParser.DEFAULT_COLOR);
+                        var newWay = new Way(nodesInCurrWay, 0, 0, 0);
                         id2way.set(wayId, newWay);
                     }
                 }

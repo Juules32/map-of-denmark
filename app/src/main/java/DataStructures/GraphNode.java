@@ -3,6 +3,7 @@ package DataStructures;
 import java.util.ArrayList;
 
 public class GraphNode extends Node {
+    
     //A GraphNode also has:
     //A list of edges
     public ArrayList<Edge> edges = null;

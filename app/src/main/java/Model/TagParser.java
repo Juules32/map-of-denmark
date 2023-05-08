@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//Fills in hashmap key-value pairs of relevant tags
 public class TagParser {
-    Model model;
 
-    public final static int DEFAULT_COLOR = 0;
+    Model model;
 
     public static void parse(
         String filename,
@@ -55,7 +55,6 @@ public class TagParser {
                 //Otherwise, add found values of key to HashMaps
                 else {
                     String value = sections[4];
-
                     if(filename.contains("relations.txt")) value = value.replace("_", " ");
                     int red = Integer.parseInt(sections[5]);
                     int green = Integer.parseInt(sections[6]);
@@ -65,7 +64,6 @@ public class TagParser {
                     keys.get(key).add(value);
                     colors.get(key).add(color);
                     priorities.get(key).add(priority);
-
                     if(defaultSpeeds != null && length >= 10) {
                         defaultSpeeds.put(value, Integer.parseInt(sections[9]));
                     }

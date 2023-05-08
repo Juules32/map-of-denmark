@@ -27,21 +27,23 @@ public class HelperMethods {
         return Math.sqrt(Math.pow((from.lat-to.lat), 2) +
                Math.pow((from.lon-to.lon), 2))*111.139;
     }
-
     
-    //Used to draw a way (similar method exists in RTree class)
     public static void drawWay(Way way, GraphicsContext gc) {
         drawWay(way, true, "Blue", gc);
     }
 
     //Iterates through all nodes in a way to draw it
     public static void drawWay(Way way, boolean isLine, String theme, GraphicsContext gc) {
+        
+        //Doesn't draw ways with less than two nodes
         if(way.nodes.length < 2) return;
         
         gc.beginPath();
         gc.moveTo(way.nodes[0].lon, way.nodes[0].lat);
+
         for (int i = 1; i < way.nodes.length; i++) {
-            //If the current node has value null, move the pencil to next point
+
+            //If the current node has value null, lift the 'pencil' to next point
             if(way.nodes[i] == null && i != way.nodes.length-1) {
                 gc.moveTo(way.nodes[i+1].lon, way.nodes[i+1].lat);
             }
@@ -58,7 +60,7 @@ public class HelperMethods {
         int blue = way.blue;
 
         //Applies color changes according to current theme
-        if(theme != null && !theme.equals("Default")) {
+        if(theme != null && !theme.equals("Default Theme")) {
             if(theme.equals("Blue")) {
                 red = 0;
                 green = 0;

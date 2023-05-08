@@ -16,9 +16,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 
 public class Controller {
-    public Model model;
+    Model model;
     View view;
 
+    //The last mouse x and y coordinates that were clicked
     double lastX;
     double lastY;
 
@@ -48,7 +49,11 @@ public class Controller {
                 String[] newAddress = model.addresses.stringToList(view.fromBox.getSelectionModel().getSelectedItem());
                 if(newAddress[0] != null && newAddress[1] != null && newAddress[2] != null) {
                     Node node = model.addresses.get(newAddress);            
-                    view.panToChosenNode(node, true);
+                    view.chosenStartNode = node;
+                    view.choosingNewStartNode = false; 
+                    view.choosingNewEndNode = false;
+                    model.graph.fastestWay = null;
+                    view.redraw();
                 }
             }
         });
@@ -59,15 +64,21 @@ public class Controller {
                 String[] newAddress = model.addresses.stringToList(view.toBox.getSelectionModel().getSelectedItem());
                 if(newAddress[0] != null && newAddress[1] != null && newAddress[2] != null) {
                     Node node = model.addresses.get(newAddress);            
-                    view.panToChosenNode(node, false);
+                    view.chosenEndNode = node;
+                    view.choosingNewStartNode = false; 
+                    view.choosingNewEndNode = false;
+                    model.graph.fastestWay = null;
+                    view.redraw();
                 }
             }
         });
 
+        //Enables choosing new start node with mouse
         view.fromPinButton.setOnMouseClicked(e -> {
             view.choosingNewStartNode = true;
         });
 
+        //Enables choosing new end node with mouse
         view.toPinButton.setOnMouseClicked(e -> {
             view.choosingNewEndNode = true;
         });
@@ -80,20 +91,20 @@ public class Controller {
                 GraphNode nearestNeighborTo = (GraphNode) model.wayTrees.nearestNeighbor(view.chosenEndNode);
                 //Used to calculate running time
                 long startTime = System.currentTimeMillis();
-                boolean success = model.graph.shortestPath(nearestNeighborFrom, nearestNeighborTo, view.dijkstraUsesAStar.isSelected(), view.transportOptions.getValue(), view.viewSearchedEdges.isSelected());
+                boolean success = model.graph.shortestPath(nearestNeighborFrom, nearestNeighborTo, view.dijkstraUsesAStar.isSelected(), view.transportOptions.getValue(), view.calculateSearchedEdges.isSelected());
+                
+                //If no shortest path was found, displays alert message
                 if(!success) {
                     String message = "Failed to find shortest path " + (!view.dijkstraUsesAStar.isSelected() ? "without " : "") +
-                            "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n";
+                    "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n";
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
                     alert.show();
                     System.out.println(message);
                 } else{
-                    //Print total distance to end node
+                    //Prints total running time information
                     System.out.println("Shortest path in km: " + model.graph.distanceStr);
-
-                    //Print the total running time information
                     System.out.println("Found shortest path " + (!view.dijkstraUsesAStar.isSelected() ? "without " : "") +
-                            "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n");
+                    "using A* after " + ((double) System.currentTimeMillis()-startTime)/1000 + " seconds\n");
                 }
             }
             
@@ -118,6 +129,7 @@ public class Controller {
             }
         });
 
+        //When mouse is pressed on map
         view.canvas.setOnMousePressed(e -> {
 
             //Updates last mouse position when mouse is pressed down
@@ -128,16 +140,23 @@ public class Controller {
             if(view.choosingNewStartNode) {
                 Point2D clickedPoint = view.mousetoModel(e.getX(), e.getY());
                 Node node = model.wayTrees.nearestNeighbor(clickedPoint.getY(), clickedPoint.getX());
-                view.panToChosenNode(node, true);
+                view.chosenStartNode = node;
+                view.choosingNewStartNode = false; 
+                view.choosingNewEndNode = false;
+                model.graph.fastestWay = null;
             }
 
             //Sets end node of path if choosingNewEndNode is enabled
             if(view.choosingNewEndNode) {
                 Point2D clickedPoint = view.mousetoModel(e.getX(), e.getY());
                 Node node = model.wayTrees.nearestNeighbor(clickedPoint.getY(), clickedPoint.getX());
-                view.panToChosenNode(node, false);
+                view.chosenEndNode = node;
+                view.choosingNewStartNode = false; 
+                view.choosingNewEndNode = false;
+                model.graph.fastestWay = null;
             }
 
+            view.redraw();
         });
 
         //Pans by the difference from last to current xy (dx and dy) on mouse drag
@@ -189,9 +208,9 @@ public class Controller {
         });
 
         //Redraws upon toggling checkBoxes
-        view.wayVisibility.setOnMouseClicked(e -> view.redraw());
-        view.areaVisibility.setOnMouseClicked(e -> view.redraw());
-        view.viewRedBoxesCheckBox.setOnMouseClicked(e -> view.redraw());
+        view.viewWays.setOnMouseClicked(e -> view.redraw());
+        view.viewAreas.setOnMouseClicked(e -> view.redraw());
+        view.viewRedBoundingBoxes.setOnMouseClicked(e -> view.redraw());
         view.viewRouteDescription.setOnMouseClicked(e -> view.redraw());
 
         //Redraws upon selecting new theme
