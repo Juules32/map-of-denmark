@@ -20,7 +20,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         //Filename of file to be loaded
-        String filename = "bornholm.osm";
+        String filename = "dk.osm.obj";
 
         //Get the InputStream from the resources folder
         InputStream filenameStream = getClass().getClassLoader().getResourceAsStream(filename);
