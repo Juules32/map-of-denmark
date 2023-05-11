@@ -158,7 +158,7 @@ public class Model implements Serializable {
             areas.add(new ArrayList<Way>());
         }
 
-        //The entirety of the xml contents in XMLS format
+        //The entirety of the xml content
         var input = XMLInputFactory.newInstance().createXMLStreamReader(new InputStreamReader(inputStream));
         
         //Denotes whether the first way and relation has been reached

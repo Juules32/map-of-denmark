@@ -80,7 +80,6 @@ jar {
     }
 }
 
- 
 tasks.withType(JavaExec) {
-    jvmArgs = ['-Xms512m', '-Xmx6G']
+    jvmArgs = ['-Xms512m', '-Xmx5G']
 }

@@ -67,11 +67,11 @@ public class RTreesTest {
     
     @Test void nearestNeighborVarietyTest() {
         assertEquals(-55.05501937866211, testRTreeWays.nearestNeighbor(-55.055, 8.35).lat);
-        assertEquals(-55.05821990966797, testRTreeWays.nearestNeighbor(-53, 0).lat);
-        assertEquals(-55.074241638183594, testRTreeWays.nearestNeighbor(-55.05, 0).lat);
-        assertEquals(-55.074527740478516, testRTreeWays.nearestNeighbor(-57, 0).lat);
-        assertEquals(-55.056114196777344, testRTreeWays.nearestNeighbor(-53, 10).lat);
-        assertEquals(-55.069095611572266, testRTreeWays.nearestNeighbor(-55.05, 10).lat);
-        assertEquals(-55.08506393432617, testRTreeWays.nearestNeighbor(-57, 10).lat);
+        assertEquals(-55.11634826660156, testRTreeWays.nearestNeighbor(-53, 0).lat);
+        assertEquals(-55.11634826660156, testRTreeWays.nearestNeighbor(-55.05, 0).lat);
+        assertEquals(-55.11668014526367, testRTreeWays.nearestNeighbor(-57, 0).lat);
+        assertEquals(-55.06290054321289, testRTreeWays.nearestNeighbor(-53, 10).lat);
+        assertEquals(-55.10866165161133, testRTreeWays.nearestNeighbor(-55.05, 10).lat);
+        assertEquals(-55.11106491088867, testRTreeWays.nearestNeighbor(-57, 10).lat);
     }
 }

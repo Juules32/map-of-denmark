@@ -19,9 +19,6 @@ public class Graph implements Serializable {
     //Amount of edges in the graph
     private long E = 0;
 
-    //Default speed value
-    public final int DEFAULT_SPEED = 80;
-
     //Current information found with dijkstra
     public Way fastestWay = null;
     public Way searchedEdges = null;
